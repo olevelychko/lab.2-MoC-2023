@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class TextCriteria {
@@ -15,6 +16,28 @@ public class TextCriteria {
 
     public static Integer numOfLetters(StringBuilder text) {
         return text.toString().length();
+    }
+
+
+    public static Integer numOfBigrams(StringBuilder text) {
+        int num_of_bi=0;
+        HashMap<String, Integer> mapOfBi = new HashMap<>();
+        for (int k = 0; k + 1 < text.length(); k++) {
+            String bigram = text.substring(k, k + 2);
+            k++;
+
+            if (!mapOfBi.containsKey(bigram)) {
+                mapOfBi.put(bigram, 1);
+                num_of_bi++;
+            } else {
+                int i = mapOfBi.get(bigram);
+                i++;
+                mapOfBi.put(bigram, i);
+                num_of_bi++;
+            }
+        }
+        System.out.println(mapOfBi);
+        return num_of_bi;
     }
 
 
@@ -34,9 +57,10 @@ public class TextCriteria {
                 }
             }
         }
-        System.out.println(builder);
         int numLet = numOfLetters(builder);
-        System.out.println("Tne number of letters is: " + numLet);
+        System.out.println("The number of letters is: " + numLet);
+        int numBi = numOfBigrams(builder);
+        System.out.println("The number of bigrams is: " + numBi);
 
 
     }
