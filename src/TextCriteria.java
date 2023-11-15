@@ -40,6 +40,26 @@ public class TextCriteria {
         return num_of_bi;
     }
 
+    public static ArrayList<String> delaytext(StringBuilder text, int l, int n)
+    {
+        ArrayList<String> delay = new ArrayList<>();
+        if(l > 100)
+        {
+            StringBuilder text1 = new StringBuilder();
+            for(int j = 0; j < 3; j++)
+            {
+                text1 = text.append(text);
+            }
+            text = text1;
+        }
+        for(int i = 0; i < n; i++)
+        {
+            delay.add(text.substring(i*l,i*l+l));
+        }
+        return delay;
+    }
+
+
 
     public static void main(String[] args) throws Exception {
         ArrayList<Double> plainText = new ArrayList<>();
@@ -61,7 +81,13 @@ public class TextCriteria {
         System.out.println("The number of letters is: " + numLet);
         int numBi = numOfBigrams(builder);
         System.out.println("The number of bigrams is: " + numBi);
-
-
+        ArrayList<String> tensym = delaytext(builder,10, 10000);
+        //System.out.println(tensym);
+        ArrayList<String> hundredsym = delaytext(builder, 100, 10000);
+        //System.out.println(hundredsym);
+        ArrayList<String> thousandsym = delaytext(builder, 1000, 10000);
+        //System.out.println(thousandsym);
+        ArrayList<String> tenthousym = delaytext(builder, 10000, 1000);
+        //System.out.println(tenthousym);
     }
 }
