@@ -58,12 +58,33 @@ public class TextCriteria {
         }
         return delay;
     }
+    public static void Vizhiner(ArrayList<String> X, String key, int mod, String alp)
+    {
+        ArrayList<String> Y = new ArrayList<>();
+        String temp = "";
+        int term;
+        for(int i = 0; i < X.size(); i++)
+        {
+            for(int j = 0; j < X.get(i).length(); j++)
+            {
+                int temp1 = X.get(i).charAt(j);
+                int temp2 = key.charAt(j%mod);
+                term = ((X.get(i).charAt(j) - 1069) + (key.charAt(j%mod) - 1069))%32;
+                temp = temp + String.valueOf(alp.charAt(term));
+                term = 0;
+            }
+            Y.add(temp);
+            temp = "";
+        }
+    }
+
 
 
 
     public static void main(String[] args) throws Exception {
         ArrayList<Double> plainText = new ArrayList<>();
-
+        String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
+        String keyword = "метропоїзд";
         File doc = new File("C:\\TextForSecondLab.txt");
         Scanner scanner = new Scanner(doc);
         StringBuilder builder = new StringBuilder();
@@ -89,5 +110,6 @@ public class TextCriteria {
         //System.out.println(thousandsym);
         ArrayList<String> tenthousym = delaytext(builder, 10000, 1000);
         //System.out.println(tenthousym);
+        Vizhiner(tensym, keyword, 1, alp);
     }
 }
