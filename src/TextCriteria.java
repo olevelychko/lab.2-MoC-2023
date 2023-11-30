@@ -85,22 +85,23 @@ public class TextCriteria {
         return delay;
     }
 
-    public static void Vigenere(ArrayList<String> X, String key, int mod, String alp) {
+    public static ArrayList<String> Vigenere(ArrayList<String> X, String key, int mod, String alp) {
         ArrayList<String> Y = new ArrayList<>();
         StringBuilder temp = new StringBuilder();
         int term;
         for (String x : X) {
             for (int j = 0; j < x.length(); j++) {
-                term = ((x.charAt(j) - 1069) + (key.charAt(j % mod) - 1069)) % 32;
+                term = (searchLet(x.charAt(j)) + searchLet(key.charAt(j % mod))) % 32;
                 temp.append(alp.charAt(term));
             }
             Y.add(temp.toString());
             temp = new StringBuilder();
         }
         // System.out.println(Y);
+        return Y;
     }
 
-    public static void Affine(ArrayList<String> X, String a, String b, String alp, int deg) {
+    public static ArrayList<String> Affine(ArrayList<String> X, String a, String b, String alp, int deg) {
         ArrayList<String> Y = new ArrayList<>();
         if (deg == 1) {
             StringBuilder temp = new StringBuilder();
@@ -133,7 +134,9 @@ public class TextCriteria {
             }
         }
         // System.out.println(Y);
+        return Y;
     }
+
 
     public static void main(String[] args) throws Exception {
         ArrayList<Double> plainText = new ArrayList<>();
