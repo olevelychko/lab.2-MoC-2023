@@ -162,9 +162,51 @@ public class TextCriteria {
     return Y;
     }
 
+    public static ArrayList<String> CorrelationSeq(int l, int n, String alp, int deg){
+        ArrayList<String> Y = new ArrayList<>();
+        if(deg==1) {
+            Random r = new Random();
+            for(int i=0; i<n; i++){
+                StringBuilder temp = new StringBuilder();
+            int s0 = r.nextInt(32);
+            int s1 = r.nextInt(32);
+            int sTemp = (s0+s1)%32;
+            temp.append(alp.charAt(sTemp));
+            for(int j=1; j<l; j++)
+                {
+                    s0 = s1;
+                    s1 = sTemp;
+                    sTemp = (s0+s1)%32;
+                    temp.append(alp.charAt(sTemp));
+                }
+                Y.add(temp.toString());
+            }
+        }
+        else {
+            ArrayList<String> allBi = bigramAlph();
+            Random r = new Random();
+            for(int i=0; i<n; i++){
+                StringBuilder temp = new StringBuilder();
+                int s0 = r.nextInt(1024);
+                int s1 = r.nextInt(1024);
+                int sTemp = (s0+s1)%1024;
+                temp.append(allBi.get(sTemp));
+                for(int j=1; j+1<l; j=j+2)
+                {
+                    s0 = s1;
+                    s1 = sTemp;
+                    sTemp = (s0+s1)%1024;
+                    temp.append(allBi.get(sTemp));
+                }
+                Y.add(temp.toString());
+            }
+        }
+        //System.out.println(Y);
+    return Y;
+    }
+
 
     public static void main(String[] args) throws Exception {
-        ArrayList<Double> plainText = new ArrayList<>();
         String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
         String keyword = "метропоїзд";
         File doc = new File("C:\\TextForSecondLab.txt");
@@ -191,6 +233,7 @@ public class TextCriteria {
         int deg = 2;
         Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
         GeneratedSeq(l, n, alp, deg);
+        CorrelationSeq(l, n, alp, deg);
 
     }
 }
