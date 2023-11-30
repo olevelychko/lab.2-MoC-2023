@@ -1,8 +1,5 @@
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class TextCriteria {
 
@@ -23,7 +20,6 @@ public class TextCriteria {
                 allBi.add(bi);
             }
         }
-        System.out.println(allBi);
         return allBi;
     }
 
@@ -137,12 +133,40 @@ public class TextCriteria {
         return Y;
     }
 
+    public static ArrayList<String> GeneratedSeq(int l, int n, String alp, int deg){
+        ArrayList<String> Y = new ArrayList<>();
+        if(deg==1){
+            Random r = new Random();
+            for(int i=0; i<n; i++){
+                StringBuilder temp = new StringBuilder();
+                for(int j=0; j<l; j++){
+                    int index = r.nextInt(32);
+                    temp.append(alp.charAt(index));
+                }
+                Y.add(temp.toString());
+            }
+        }
+        else{
+            Random r = new Random();
+            ArrayList<String> allBi = bigramAlph();
+            for(int i=0; i<n; i++){
+                StringBuilder temp = new StringBuilder();
+                for(int j=0; j+1<l; j=j+2){
+                    int index = r.nextInt(1024);
+                    temp.append(allBi.get(index));
+                }
+                Y.add(temp.toString());
+            }
+        }
+       // System.out.println(Y);
+    return Y;
+    }
+
 
     public static void main(String[] args) throws Exception {
         ArrayList<Double> plainText = new ArrayList<>();
         String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
         String keyword = "метропоїзд";
-        String a = "апраршгарфдвдимдфиижюимашвфгмомищшвфдимгщиащмшишгидиідлвоимолафшярсшршршмармшардялвтмолаавм";
         File doc = new File("C:\\TextForSecondLab.txt");
         Scanner scanner = new Scanner(doc);
         StringBuilder builder = new StringBuilder();
@@ -160,16 +184,13 @@ public class TextCriteria {
         System.out.println("The number of letters is: " + numLet);
         int numBi = numOfBigrams(builder);
         System.out.println("The number of bigrams is: " + numBi);
-        ArrayList<String> tensym = delaytext(builder, 10, 10000);
-        //System.out.println(tensym);
-        ArrayList<String> hundredsym = delaytext(builder, 100, 10000);
-        //System.out.println(hundredsym);
-        ArrayList<String> thousandsym = delaytext(builder, 1000, 10000);
-        //System.out.println(thousandsym);
-        ArrayList<String> tenthousym = delaytext(builder, 10000, 1000);
-        //System.out.println(tenthousym);
+        int l = 10;
+        int n = 10_000;
+        ArrayList<String> tensym = delaytext(builder, l, n);
         Vigenere(tensym, keyword, 1, alp);
         int deg = 2;
         Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
+        GeneratedSeq(l, n, alp, deg);
+
     }
 }
