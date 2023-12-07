@@ -69,7 +69,7 @@ public class TextCriteria {
         return num_of_bi;
     }
 
-    public static HashMap<Character, Integer> mapOfPopularLet(StringBuilder text, int lim) {
+    public static HashMap<Character, Integer> mapOfPopularLet(String text, int lim) {
         HashMap<Character, Integer> mapOfLet = new HashMap<>();
         for (int k = 0; k < text.length(); k++) {
             if (!mapOfLet.containsKey(text.charAt(k))) {
@@ -83,12 +83,12 @@ public class TextCriteria {
         HashMap<Character, Integer> mapOfPopLet = new HashMap<>();
         for(int i=0; i<alp.length(); i++){
             char tempLet = alp.charAt(i);
-            if(mapOfLet.get(tempLet)>lim) mapOfPopLet.put(tempLet,1);
+            if(mapOfLet.get(tempLet)>lim) mapOfPopLet.put(tempLet,mapOfLet.get(tempLet));
         }
         return mapOfPopLet;
     }
 
-    public static  HashMap<String, Integer> mapOfPopularBi(StringBuilder text, int lim) {
+    public static  HashMap<String, Integer> mapOfPopularBi(String text, int lim) {
         HashMap<String, Integer> mapOfBi = new HashMap<>();
         for (int k = 0; k + 1 < text.length(); k++) {
             String bigram = text.substring(k, k + 2);
@@ -259,7 +259,7 @@ public class TextCriteria {
     }
 
     //in criteria false symbolizes H_1, true -- H_0
-    public static boolean CriteriaZero(ArrayList<String> N, StringBuilder text, int mod) {
+    public static boolean CriteriaZero(ArrayList<String> N, String text, int mod) {
         if (mod == 1) {
             HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
             for (String l : N) {
@@ -282,7 +282,7 @@ public class TextCriteria {
         return true;
     }
 
-    public static boolean CriteriaOne(ArrayList<String> N, StringBuilder text, int mod)
+    public static boolean CriteriaOne(ArrayList<String> N, String text, int mod)
     {
         if(mod==1){
             HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
@@ -308,6 +308,78 @@ public class TextCriteria {
         }
         //System.out.println(Afrq);
         //System.out.println(N);
+    }
+
+    public static boolean CriteriaTwo(ArrayList<String> N, String text, int mod)
+    {
+        if(mod==1) {
+            HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
+            HashMap<Character, Integer> Aaf ;
+            for (String l : N) {
+                Aaf = mapOfPopularLet(l,0);
+                for (int j = 0; j < (N.get(0)).length(); j++) {
+                    if(Afrq.containsKey(l.charAt(j)))
+                    {
+                        if(Aaf.get(l.charAt(j)) < 2) return false;
+                    }
+                }
+            }
+            return true;
+        }
+        else {
+            HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
+            HashMap<String, Integer> Aaf;
+            for (String l : N) {
+                Aaf = mapOfPopularBi(l,0);
+                for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
+                    String lTemp = l.substring(j, j + 2);
+                    if (Afrq.containsKey(lTemp))
+                    {
+                        if(Aaf.get(lTemp) < 2) return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    public static boolean CriteriaThree(ArrayList<String> N, String text, int mod)
+    {
+        if(mod == 1)
+        {
+            HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
+            HashMap<Character, Integer> Aaf;
+            int sum = 0;
+            for (String l : N) {
+                Aaf = mapOfPopularLet(l,0);
+                for (int j = 0; j < (N.get(0)).length(); j++) {
+                    if(Afrq.containsKey(l.charAt(j)))
+                    {
+                        sum+= Aaf.get(l.charAt(j));
+                    }
+                }
+                if(sum < 5) return false;
+            }
+            return true;
+        }
+        else{
+            HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
+            HashMap<String, Integer> Aaf;
+            int sum = 0;
+            for (String l : N) {
+                Aaf = mapOfPopularBi(l,0);
+                for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
+                    String lTemp = l.substring(j, j + 2);
+                    if (Afrq.containsKey(lTemp))
+                    {
+                        sum+=Aaf.get(lTemp);
+                    }
+                }
+                if(sum < 3) return false;
+            }
+            return true;
+        }
+
     }
 
 
@@ -338,7 +410,7 @@ public class TextCriteria {
         Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
         ArrayList<String > N1 = GeneratedSeq(l, n, alp, deg);
         CorrelationSeq(l, n, alp, deg);
-        boolean ind = CriteriaOne(tensym, builder, deg);
+        boolean ind = CriteriaOne(tensym, builder.toString(), deg);
         System.out.println(ind);
     }
 }
