@@ -67,6 +67,49 @@ public class TextCriteria {
         return num_of_bi;
     }
 
+    public static ArrayList<String> mapofBi(StringBuilder text) {
+        int num_of_bi = 0;
+        HashMap<String, Integer> mapOfBi = new HashMap<>();
+        for (int k = 0; k + 1 < text.length(); k++) {
+            String bigram = text.substring(k, k + 2);
+            k++;
+
+            if (!mapOfBi.containsKey(bigram)) {
+                mapOfBi.put(bigram, 1);
+                num_of_bi++;
+            } else {
+                int i = mapOfBi.get(bigram);
+                i++;
+                mapOfBi.put(bigram, i);
+                num_of_bi++;
+            }
+        }
+        //System.out.println(mapOfBi);
+        ArrayList<String> alpBi = bigramAlph();
+        ArrayList<String> bigram = new ArrayList<>();
+        for (String s : alpBi) {
+            if (mapOfBi.containsKey(s)) {
+                bigram.add(s);
+                bigram.add(String.valueOf(mapOfBi.get(s)));
+            }
+        }
+        System.out.println(bigram);
+        return bigram;
+    }
+
+    public static ArrayList<String> Afrqcreate(StringBuilder text) {
+        ArrayList<String> bigram =  mapofBi(text);
+        int limit = 3000;
+        ArrayList<String> Afrq = new ArrayList<>();
+        for(int i = 1; i < bigram.size(); i+=2)
+        {
+            if(Integer.parseInt(bigram.get(i)) >= limit) Afrq.add(bigram.get(i-1));
+        }
+        return Afrq;
+    }
+
+
+
     public static ArrayList<String> delaytext(StringBuilder text, int l, int n) {
         ArrayList<String> delay = new ArrayList<>();
         if (l > 100) {
@@ -158,8 +201,8 @@ public class TextCriteria {
                 Y.add(temp.toString());
             }
         }
-       // System.out.println(Y);
-    return Y;
+        // System.out.println(Y);
+        return Y;
     }
 
     public static ArrayList<String> CorrelationSeq(int l, int n, String alp, int deg){
@@ -168,11 +211,11 @@ public class TextCriteria {
             Random r = new Random();
             for(int i=0; i<n; i++){
                 StringBuilder temp = new StringBuilder();
-            int s0 = r.nextInt(32);
-            int s1 = r.nextInt(32);
-            int sTemp = (s0+s1)%32;
-            temp.append(alp.charAt(sTemp));
-            for(int j=1; j<l; j++)
+                int s0 = r.nextInt(32);
+                int s1 = r.nextInt(32);
+                int sTemp = (s0+s1)%32;
+                temp.append(alp.charAt(sTemp));
+                for(int j=1; j<l; j++)
                 {
                     s0 = s1;
                     s1 = sTemp;
@@ -202,7 +245,14 @@ public class TextCriteria {
             }
         }
         //System.out.println(Y);
-    return Y;
+        return Y;
+    }
+
+    public static void CriteriaZero(ArrayList<String> N, StringBuilder text)
+    {
+        ArrayList<String> Afrq = Afrqcreate(text);
+        //System.out.println(Afrq);
+        //System.out.println(N);
     }
 
 
@@ -232,8 +282,8 @@ public class TextCriteria {
         Vigenere(tensym, keyword, 1, alp);
         int deg = 2;
         Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
-        GeneratedSeq(l, n, alp, deg);
+        ArrayList<String > N1 = GeneratedSeq(l, n, alp, deg);
         CorrelationSeq(l, n, alp, deg);
-
+        CriteriaZero(tensym, builder);
     }
 }
