@@ -88,6 +88,25 @@ public class TextCriteria {
         return mapOfPopLet;
     }
 
+    public static HashMap<Character, Integer> mapOfnonPopularLet(String text, int lim) {
+        HashMap<Character, Integer> mapOfLet = new HashMap<>();
+        for (int k = 0; k < text.length(); k++) {
+            if (!mapOfLet.containsKey(text.charAt(k))) {
+                mapOfLet.put(text.charAt(k), 1);
+            } else {
+                int i = mapOfLet.get(text.charAt(k));
+                i++;
+                mapOfLet.put(text.charAt(k), i);
+            }
+        }
+        HashMap<Character, Integer> mapOfnonPopLet = new HashMap<>();
+        for(int i=0; i<alp.length(); i++){
+            char tempLet = alp.charAt(i);
+            if(mapOfLet.get(tempLet)<lim) mapOfnonPopLet.put(tempLet,mapOfLet.get(tempLet));
+        }
+        return mapOfnonPopLet;
+    }
+
     public static  HashMap<String, Integer> mapOfPopularBi(String text, int lim) {
         HashMap<String, Integer> mapOfBi = new HashMap<>();
         for (int k = 0; k + 1 < text.length(); k++) {
@@ -118,6 +137,37 @@ public class TextCriteria {
             if(freq > lim) popBi.put(bigram.get(i-1), freq);
         }
         return popBi;
+    }
+
+    public static  HashMap<String, Integer> mapOfnonPopularBi(String text, int lim) {
+        HashMap<String, Integer> mapOfBi = new HashMap<>();
+        for (int k = 0; k + 1 < text.length(); k++) {
+            String bigram = text.substring(k, k + 2);
+            k++;
+
+            if (!mapOfBi.containsKey(bigram)) {
+                mapOfBi.put(bigram, 1);
+            } else {
+                int i = mapOfBi.get(bigram);
+                i++;
+                mapOfBi.put(bigram, i);
+            }
+        }
+        ArrayList<String> alpBi = bigramAlph();
+        ArrayList<String> bigram = new ArrayList<>();
+        for (String s : alpBi) {
+            if (mapOfBi.containsKey(s)) {
+                bigram.add(s);
+                bigram.add(String.valueOf(mapOfBi.get(s)));
+            }
+        }
+        HashMap<String, Integer> nonpopBi = new HashMap<>();
+        for(int i = 1; i < bigram.size(); i+=2)
+        {
+            int freq = Integer.parseInt(bigram.get(i));
+            if(freq < lim) nonpopBi.put(bigram.get(i-1), freq);
+        }
+        return nonpopBi;
     }
 
     public static ArrayList<String> delaytext(StringBuilder text, int l, int n) {
@@ -431,6 +481,44 @@ public class TextCriteria {
         return true;
     }
 
+    public static boolean CriteriaFive(ArrayList<String> N, String text, int mod)
+    {
+        if(mod == 1)
+        {
+            HashMap<Character, Integer> frq = mapOfnonPopularLet(text, 1700);
+            HashMap<Character, Integer> Brf = new HashMap<>();
+            int sum;
+            for (String l : N) {
+                for (int j = 0; j < (N.get(0)).length(); j++) {
+                    if(frq.containsKey(l.charAt(j)))
+                    {
+                        Brf.put(l.charAt(j),1);
+                    }
+                }
+                sum = l.length() - Brf.size();
+                if(sum <= 5) return false;
+            }
+            return true;
+        }
+        else {
+            HashMap<String, Integer> frq = mapOfnonPopularBi(text, 500);
+            HashMap<String, Integer> Brf = new HashMap<>();
+            int sum;
+            for (String l : N) {
+                for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
+                    String lTemp = l.substring(j, j + 2);
+                    if (frq.containsKey(lTemp))
+                    {
+                        Brf.put(lTemp,1);
+                    }
+
+                }
+                sum = l.length() - Brf.size();
+                if(sum < 3) return false;
+            }
+            return true;
+        }
+    }
 
     public static void main(String[] args) throws Exception {
         String keyword = "метропоїзд";
