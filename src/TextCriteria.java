@@ -382,6 +382,55 @@ public class TextCriteria {
 
     }
 
+    public static double BiSubIndex(String L, HashMap<String, Integer> freq)
+    {
+        ArrayList<String> alp = bigramAlph();
+        double a = 0;
+        for(int i = 0; i < alp.size(); i++)
+        {
+            if(freq.containsKey(alp.get(i))) a+=freq.get(alp.get(i));
+        }
+        a = a/(L.length()*(L.length()-1));
+        return a;
+    }
+
+    public static double LetSubIndex(String L, HashMap<Character, Integer> freq)
+    {
+        double a = 0;
+        for(int i = 0; i < alp.length(); i++)
+        {
+            if(freq.containsKey(alp.charAt(i))) a+=freq.get(alp.charAt(i));
+        }
+        a = a/(L.length()*(L.length()-1));
+        return a;
+    }
+
+    public static boolean CriteriaFour(ArrayList<String> N, String text, int mod)
+    {
+        if(mod == 1)
+        {
+            HashMap<Character, Integer> frq = mapOfPopularLet(text, 0);
+            HashMap<Character, Integer> Aaf;
+            double SubInd = LetSubIndex(text,frq);
+            for (String l : N) {
+                Aaf = mapOfPopularLet(l,0);
+                double SubLInd = LetSubIndex(l,Aaf);
+                if(abs(SubInd - SubLInd) > 0.6) return false;
+            }
+        }
+        else{
+            HashMap<String, Integer> frq = mapOfPopularBi(text, 0);
+            HashMap<String, Integer> Aaf;
+            double SubInd = BiSubIndex(text,frq);
+            for (String l : N) {
+                Aaf = mapOfPopularBi(l,0);
+                double SubLInd = BiSubIndex(l,Aaf);
+                if(abs(SubInd - SubLInd) > 0.6) return false;
+            }
+        }
+        return true;
+    }
+
 
     public static void main(String[] args) throws Exception {
         String keyword = "метропоїзд";
