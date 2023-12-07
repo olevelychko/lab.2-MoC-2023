@@ -1,10 +1,14 @@
 import java.io.File;
 import java.util.*;
 
+import static java.lang.Math.abs;
+
 public class TextCriteria {
+    private static final String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
+    private static final int limLet = 6000;
+    private static final int limBi = 3000;
 
     private static boolean isCyrillicOrSpace(char ch) {
-        String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
         for (int i = 0; i < alp.length(); i++) {
             if (ch == alp.charAt(i)) return true;
         }
@@ -12,7 +16,6 @@ public class TextCriteria {
     }
 
     private static ArrayList<String> bigramAlph() {
-        String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
         ArrayList<String> allBi = new ArrayList<>();
         for (int i = 0; i < 32; i++) {
             for (int j = 0; j < 32; j++) {
@@ -24,7 +27,6 @@ public class TextCriteria {
     }
 
     private static int searchLet(char let) {
-        String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
         for (int i = 0; i < alp.length(); i++) {
             if (let == alp.charAt(i)) return i;
         }
@@ -67,8 +69,26 @@ public class TextCriteria {
         return num_of_bi;
     }
 
-    public static ArrayList<String> mapofBi(StringBuilder text) {
-        int num_of_bi = 0;
+    public static HashMap<Character, Integer> mapOfPopularLet(StringBuilder text, int lim) {
+        HashMap<Character, Integer> mapOfLet = new HashMap<>();
+        for (int k = 0; k < text.length(); k++) {
+            if (!mapOfLet.containsKey(text.charAt(k))) {
+                mapOfLet.put(text.charAt(k), 1);
+            } else {
+                int i = mapOfLet.get(text.charAt(k));
+                i++;
+                mapOfLet.put(text.charAt(k), i);
+            }
+        }
+        HashMap<Character, Integer> mapOfPopLet = new HashMap<>();
+        for(int i=0; i<alp.length(); i++){
+            char tempLet = alp.charAt(i);
+            if(mapOfLet.get(tempLet)>lim) mapOfPopLet.put(tempLet,1);
+        }
+        return mapOfPopLet;
+    }
+
+    public static  HashMap<String, Integer> mapOfPopularBi(StringBuilder text, int lim) {
         HashMap<String, Integer> mapOfBi = new HashMap<>();
         for (int k = 0; k + 1 < text.length(); k++) {
             String bigram = text.substring(k, k + 2);
@@ -76,12 +96,10 @@ public class TextCriteria {
 
             if (!mapOfBi.containsKey(bigram)) {
                 mapOfBi.put(bigram, 1);
-                num_of_bi++;
             } else {
                 int i = mapOfBi.get(bigram);
                 i++;
                 mapOfBi.put(bigram, i);
-                num_of_bi++;
             }
         }
         //System.out.println(mapOfBi);
@@ -93,22 +111,14 @@ public class TextCriteria {
                 bigram.add(String.valueOf(mapOfBi.get(s)));
             }
         }
-        System.out.println(bigram);
-        return bigram;
-    }
-
-    public static ArrayList<String> Afrqcreate(StringBuilder text) {
-        ArrayList<String> bigram =  mapofBi(text);
-        int limit = 3000;
-        ArrayList<String> Afrq = new ArrayList<>();
+        HashMap<String, Integer> popBi = new HashMap<>();
         for(int i = 1; i < bigram.size(); i+=2)
         {
-            if(Integer.parseInt(bigram.get(i)) >= limit) Afrq.add(bigram.get(i-1));
+            int freq = Integer.parseInt(bigram.get(i));
+            if(freq > lim) popBi.put(bigram.get(i-1), freq);
         }
-        return Afrq;
+        return popBi;
     }
-
-
 
     public static ArrayList<String> delaytext(StringBuilder text, int l, int n) {
         ArrayList<String> delay = new ArrayList<>();
@@ -248,16 +258,60 @@ public class TextCriteria {
         return Y;
     }
 
-    public static void CriteriaZero(ArrayList<String> N, StringBuilder text)
+    //in criteria false symbolizes H_1, true -- H_0
+    public static boolean CriteriaZero(ArrayList<String> N, StringBuilder text, int mod) {
+        if (mod == 1) {
+            HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
+            for (String l : N) {
+                for (int j = 0; j < (N.get(0)).length(); j++) {
+                    char lTemp = alp.charAt(j);
+                    if (!Afrq.containsKey(lTemp)) return false;
+                }
+            }
+        } else {
+            HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
+        for (String l : N) {
+            for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
+                String lTemp = l.substring(j, j + 2);
+                if (!Afrq.containsKey(lTemp)) return false;
+            }
+        }
+    }
+        //System.out.println(Afrq);
+        //System.out.println(N);
+        return true;
+    }
+
+    public static boolean CriteriaOne(ArrayList<String> N, StringBuilder text, int mod)
     {
-        ArrayList<String> Afrq = Afrqcreate(text);
+        if(mod==1){
+            HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
+            HashMap<Character, Integer> Aaf = new HashMap<>();
+            for (String l : N) {
+                for (int j = 0; j < (N.get(0)).length(); j++) {
+                    char lTemp = alp.charAt(j);
+                    if (Afrq.containsKey(lTemp)) Aaf.put(lTemp, 1);
+                }
+            }
+            return abs(Afrq.size() - Aaf.size()) >= 2;
+        }
+        else {
+            HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
+            HashMap<String, Integer> Aaf = new HashMap<>();
+            for (String l : N) {
+                for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
+                    String lTemp = l.substring(j, j + 2);
+                    if (Afrq.containsKey(lTemp)) Aaf.put(lTemp, 1);
+                }
+            }
+            return abs(Afrq.size() - Aaf.size()) >= 2;
+        }
         //System.out.println(Afrq);
         //System.out.println(N);
     }
 
 
     public static void main(String[] args) throws Exception {
-        String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
         String keyword = "метропоїзд";
         File doc = new File("C:\\TextForSecondLab.txt");
         Scanner scanner = new Scanner(doc);
@@ -284,6 +338,7 @@ public class TextCriteria {
         Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
         ArrayList<String > N1 = GeneratedSeq(l, n, alp, deg);
         CorrelationSeq(l, n, alp, deg);
-        CriteriaZero(tensym, builder);
+        boolean ind = CriteriaOne(tensym, builder, deg);
+        System.out.println(ind);
     }
 }
