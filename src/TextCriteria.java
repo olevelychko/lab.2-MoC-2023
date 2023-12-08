@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -9,7 +10,7 @@ import static java.lang.Math.abs;
 
 public class TextCriteria {
     private static final String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
-    private static final int limLet = 400;
+    private static final int limLet = 40000;
     private static final int limBi = 2500;
 
     private static boolean isCyrillicOrSpace(char ch) {
@@ -58,18 +59,15 @@ public class TextCriteria {
         for (int k = 0; k + 1 < text.length(); k++) {
             String bigram = text.substring(k, k + 2);
             k++;
-
             if (!mapOfBi.containsKey(bigram)) {
                 mapOfBi.put(bigram, 1);
-                num_of_bi++;
             } else {
                 int i = mapOfBi.get(bigram);
                 i++;
                 mapOfBi.put(bigram, i);
-                num_of_bi++;
             }
+            num_of_bi++;
         }
-        System.out.println(mapOfBi);
         return num_of_bi;
     }
 
@@ -126,7 +124,6 @@ public class TextCriteria {
                 mapOfBi.put(bigram, i);
             }
         }
-        //System.out.println(mapOfBi);
         ArrayList<String> alpBi = bigramAlph();
         ArrayList<String> bigram = new ArrayList<>();
         for (String s : alpBi) {
@@ -199,7 +196,6 @@ public class TextCriteria {
             Y.add(temp.toString());
             temp = new StringBuilder();
         }
-        // System.out.println(Y);
         return Y;
     }
 
@@ -235,7 +231,6 @@ public class TextCriteria {
                 temp = new StringBuilder();
             }
         }
-        // System.out.println(Y);
         return Y;
     }
 
@@ -263,7 +258,6 @@ public class TextCriteria {
                 Y.add(temp.toString());
             }
         }
-        // System.out.println(Y);
         return Y;
     }
 
@@ -303,7 +297,6 @@ public class TextCriteria {
                 Y.add(temp.toString());
             }
         }
-        //System.out.println(Y);
         return Y;
     }
 
@@ -352,33 +345,29 @@ public class TextCriteria {
             for (String l : N) {
                 HashMap<Character, Integer> Aaf = new HashMap<>();
                 for (int j = 0; j < (N.get(0)).length(); j++) {
-                    char lTemp = alp.charAt(j);
+                    char lTemp = l.charAt(j);
                     if (Afrq.containsKey(lTemp)) Aaf.put(lTemp, 1);
                 }
-                if (abs(Afrq.size() - Aaf.size()) <= 2) {
+                if (abs(Afrq.size() - Aaf.size()) <= 7) {
                     countfalse++;
-                    break;
                 }
-                if (abs(Afrq.size() - Aaf.size()) > 2) {
+                if (abs(Afrq.size() - Aaf.size()) > 7) {
                     counttrue++;
-                    break;
                 }
             }
         } else {
             HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
-            HashMap<String, Integer> Aaf = new HashMap<>();
             for (String l : N) {
+                HashMap<String, Integer> Aaf = new HashMap<>();
                 for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
                     String lTemp = l.substring(j, j + 2);
                     if (Afrq.containsKey(lTemp)) Aaf.put(lTemp, 1);
                 }
                 if (abs(Afrq.size() - Aaf.size()) <= 2) {
                     countfalse++;
-                    break;
                 }
                 if (abs(Afrq.size() - Aaf.size()) > 2) {
                     counttrue++;
-                    break;
                 }
             }
         }
@@ -390,9 +379,8 @@ public class TextCriteria {
         int counttrue = 0, countfalse = 0;
         if (mod == 1) {
             HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
-            HashMap<Character, Integer> Aaf;
             for (String l : N) {
-                Aaf = mapOfPopularLet(l, 0);
+                HashMap<Character, Integer> Aaf = mapOfPopularLet(l, 0);
                 for (int j = 0; j < (N.get(0)).length(); j++) {
                     if (Afrq.containsKey(l.charAt(j))) {
                         if (Aaf.get(l.charAt(j)) < 2) {
@@ -408,9 +396,9 @@ public class TextCriteria {
             }
         } else {
             HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
-            HashMap<String, Integer> Aaf;
+
             for (String l : N) {
-                Aaf = mapOfPopularBi(l, 0);
+                HashMap<String, Integer> Aaf = mapOfPopularBi(l, 0);
                 for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
                     String lTemp = l.substring(j, j + 2);
                     if (Afrq.containsKey(lTemp)) {
@@ -431,46 +419,59 @@ public class TextCriteria {
         else return countfalse;
     }
 
-    public static boolean CriteriaThree(ArrayList<String> N, String text, int mod, int FFPP) {
+    public static int CriteriaThree(ArrayList<String> N, String text, int mod, int FFPP) {
         int counttrue = 0, countfalse = 0;
         if (mod == 1) {
             HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
-            HashMap<Character, Integer> Aaf;
+            System.out.println(Afrq);
             int sum = 0;
             for (String l : N) {
-                Aaf = mapOfPopularLet(l, 0);
+                HashMap<Character, Integer> Aaf = mapOfPopularLet(l, 0);
+                System.out.println(l);
+                System.out.println(Aaf);
                 for (int j = 0; j < (N.get(0)).length(); j++) {
                     if (Afrq.containsKey(l.charAt(j))) {
                         sum += Aaf.get(l.charAt(j));
                     }
+
                 }
-                if (sum < 5) return false;
+                if (sum < 5) {
+                    countfalse++;
+                }
+                if (sum >= 5) {
+                    counttrue++;
+                }
+                sum=0;
             }
-            return true;
         } else {
             HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
-            HashMap<String, Integer> Aaf;
             int sum = 0;
             for (String l : N) {
-                Aaf = mapOfPopularBi(l, 0);
+                HashMap<String, Integer> Aaf = mapOfPopularBi(l, 0);
                 for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
                     String lTemp = l.substring(j, j + 2);
                     if (Afrq.containsKey(lTemp)) {
                         sum += Aaf.get(lTemp);
                     }
                 }
-                if (sum < 3) return false;
+                if (sum < 3) {
+                    countfalse++;
+                }
+                if (sum >= 3) {
+                    counttrue++;
+                }
+                sum=0;
             }
-            return true;
         }
-
+        if (FFPP == 1) return counttrue;
+        else return countfalse;
     }
 
     public static double BiSubIndex(String L, HashMap<String, Integer> freq) {
         ArrayList<String> alp = bigramAlph();
         double a = 0;
-        for (int i = 0; i < alp.size(); i++) {
-            if (freq.containsKey(alp.get(i))) a = a + freq.get(alp.get(i)) * (freq.get(alp.get(i)) - 1);
+        for (String s : alp) {
+            if (freq.containsKey(s)) a = a + freq.get(s) * (freq.get(s) - 1);
         }
         a = a / (L.length() * (L.length() - 1));
         return a;
@@ -489,20 +490,18 @@ public class TextCriteria {
         int counttrue = 0, countfalse = 0;
         if (mod == 1) {
             HashMap<Character, Integer> frq = mapOfPopularLet(text, 0);
-            HashMap<Character, Integer> Aaf;
             double SubInd = LetSubIndex(text, frq);
             for (String l : N) {
-                Aaf = mapOfPopularLet(l, 0);
+                HashMap<Character, Integer> Aaf = mapOfPopularLet(l, 0);
                 double SubLInd = LetSubIndex(l, Aaf);
                 if (abs(SubInd - SubLInd) > 4.41) countfalse++;
                 else counttrue++;
             }
         } else {
             HashMap<String, Integer> frq = mapOfPopularBi(text, 0);
-            HashMap<String, Integer> Aaf;
             double SubInd = BiSubIndex(text, frq);
             for (String l : N) {
-                Aaf = mapOfPopularBi(l, 0);
+                HashMap<String, Integer> Aaf = mapOfPopularBi(l, 0);
                 double SubLInd = BiSubIndex(l, Aaf);
                 if (abs(SubInd - SubLInd) > 0.955) countfalse++;
                 else counttrue++;
@@ -517,9 +516,9 @@ public class TextCriteria {
         int counttrue = 0, countfalse = 0;
         if (mod == 1) {
             HashMap<Character, Integer> frq = mapOfnonPopularLet(text, 11000);
-            HashMap<Character, Integer> Brf = new HashMap<>();
             int sum;
             for (String l : N) {
+                HashMap<Character, Integer> Brf = new HashMap<>();
                 for (int j = 0; j < (N.get(0)).length(); j++) {
                     if (frq.containsKey(l.charAt(j))) {
                         Brf.put(l.charAt(j), 1);
@@ -531,9 +530,9 @@ public class TextCriteria {
             }
         } else {
             HashMap<String, Integer> frq = mapOfnonPopularBi(text, 3);
-            HashMap<String, Integer> Brf = new HashMap<>();
             int sum;
             for (String l : N) {
+                HashMap<String, Integer> Brf = new HashMap<>();
                 for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
                     String lTemp = l.substring(j, j + 2);
                     if (frq.containsKey(lTemp)) {
@@ -552,33 +551,30 @@ public class TextCriteria {
     }
 
     public static boolean StructureCriteria(ArrayList<String> N, String text) throws UnsupportedEncodingException, DataFormatException {
-        for (String l : N) {
-            String inputString = text;
-            byte[] input = inputString.getBytes("UTF-8");
+        for (String ignored : N) {
+            byte[] input = text.getBytes(StandardCharsets.UTF_8);
             // Compress the bytes
             byte[] output = new byte[100];
-            Deflater compresser = new Deflater();
-            compresser.setInput(input);
-            compresser.finish();
-            int compressedDataLength = compresser.deflate(output);
-            compresser.end();
+            Deflater compressor = new Deflater();
+            compressor.setInput(input);
+            compressor.finish();
+            int compressedDataLength = compressor.deflate(output);
+            compressor.end();
 
-            String putString = new String(output, 0, compressedDataLength, "UTF-8");
+            String putString = new String(output, 0, compressedDataLength, StandardCharsets.UTF_8);
             System.out.println(putString);
             // Decompress the bytes
-            Inflater decompresser = new Inflater();
-            decompresser.setInput(output, 0, compressedDataLength);
+            Inflater decompressor = new Inflater();
+            decompressor.setInput(output, 0, compressedDataLength);
             byte[] result = new byte[100];
-            int resultLength = decompresser.inflate(result);
-            decompresser.end();
+            int resultLength = decompressor.inflate(result);
+            decompressor.end();
 
             // Decode the bytes into a String
-            String outputString = new String(result, 0, resultLength, "UTF-8");
+            String outputString = new String(result, 0, resultLength, StandardCharsets.UTF_8);
             System.out.println(outputString);
         }
         return true;
-
-
     }
 
     public static void main(String[] args) throws Exception {
@@ -608,8 +604,7 @@ public class TextCriteria {
         Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
         ArrayList<String> N1 = GeneratedSeq(l, n, alp, deg);
         CorrelationSeq(l, n, alp, deg);
-        int ind = CriteriaFive(Vigenere(tensym, keyword, 1, alp), builder.toString(), deg, 2);
+        int ind = CriteriaFive(Vigenere(tensym, keyword, 1, alp), builder.toString(), deg, 1);
         System.out.println(ind);
-
     }
 }
