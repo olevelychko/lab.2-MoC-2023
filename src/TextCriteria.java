@@ -1,5 +1,9 @@
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import static java.lang.Math.abs;
 
@@ -520,6 +524,36 @@ public class TextCriteria {
         }
     }
 
+    public static boolean StructureCriteria(ArrayList<String> N, String text) throws UnsupportedEncodingException, DataFormatException {
+        for (String l : N) {
+            String inputString = text;
+            byte[] input = inputString.getBytes("UTF-8");
+            // Compress the bytes
+            byte[] output = new byte[100];
+            Deflater compresser = new Deflater();
+            compresser.setInput(input);
+            compresser.finish();
+            int compressedDataLength = compresser.deflate(output);
+            compresser.end();
+
+            String putString = new String(output, 0, compressedDataLength, "UTF-8");
+            System.out.println(putString);
+            // Decompress the bytes
+            Inflater decompresser = new Inflater();
+            decompresser.setInput(output, 0, compressedDataLength);
+            byte[] result = new byte[100];
+            int resultLength = decompresser.inflate(result);
+            decompresser.end();
+
+            // Decode the bytes into a String
+            String outputString = new String(result, 0, resultLength, "UTF-8");
+            System.out.println(outputString);
+        }
+        return true;
+
+
+    }
+
     public static void main(String[] args) throws Exception {
         String keyword = "метропоїзд";
         File doc = new File("C:\\TextForSecondLab.txt");
@@ -549,5 +583,6 @@ public class TextCriteria {
         CorrelationSeq(l, n, alp, deg);
         boolean ind = CriteriaOne(tensym, builder.toString(), deg);
         System.out.println(ind);
+        StructureCriteria(N1,builder.toString());
     }
 }
