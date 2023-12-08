@@ -85,9 +85,10 @@ public class TextCriteria {
             }
         }
         HashMap<Character, Integer> mapOfPopLet = new HashMap<>();
-        for(int i=0; i<alp.length(); i++){
+        for (int i = 0; i < alp.length(); i++) {
             char tempLet = alp.charAt(i);
-            if(mapOfLet.containsKey(tempLet) && (mapOfLet.get(tempLet)>lim)) mapOfPopLet.put(tempLet,mapOfLet.get(tempLet));
+            if (mapOfLet.containsKey(tempLet) && (mapOfLet.get(tempLet) > lim))
+                mapOfPopLet.put(tempLet, mapOfLet.get(tempLet));
         }
         return mapOfPopLet;
     }
@@ -104,14 +105,14 @@ public class TextCriteria {
             }
         }
         HashMap<Character, Integer> mapOfnonPopLet = new HashMap<>();
-        for(int i=0; i<alp.length(); i++){
+        for (int i = 0; i < alp.length(); i++) {
             char tempLet = alp.charAt(i);
-            if(mapOfLet.get(tempLet)<lim) mapOfnonPopLet.put(tempLet,mapOfLet.get(tempLet));
+            if (mapOfLet.get(tempLet) < lim) mapOfnonPopLet.put(tempLet, mapOfLet.get(tempLet));
         }
         return mapOfnonPopLet;
     }
 
-    public static  HashMap<String, Integer> mapOfPopularBi(String text, int lim) {
+    public static HashMap<String, Integer> mapOfPopularBi(String text, int lim) {
         HashMap<String, Integer> mapOfBi = new HashMap<>();
         for (int k = 0; k + 1 < text.length(); k++) {
             String bigram = text.substring(k, k + 2);
@@ -135,15 +136,14 @@ public class TextCriteria {
             }
         }
         HashMap<String, Integer> popBi = new HashMap<>();
-        for(int i = 1; i < bigram.size(); i+=2)
-        {
+        for (int i = 1; i < bigram.size(); i += 2) {
             int freq = Integer.parseInt(bigram.get(i));
-            if(freq > lim) popBi.put(bigram.get(i-1), freq);
+            if (freq > lim) popBi.put(bigram.get(i - 1), freq);
         }
         return popBi;
     }
 
-    public static  HashMap<String, Integer> mapOfnonPopularBi(String text, int lim) {
+    public static HashMap<String, Integer> mapOfnonPopularBi(String text, int lim) {
         HashMap<String, Integer> mapOfBi = new HashMap<>();
         for (int k = 0; k + 1 < text.length(); k++) {
             String bigram = text.substring(k, k + 2);
@@ -166,10 +166,9 @@ public class TextCriteria {
             }
         }
         HashMap<String, Integer> nonpopBi = new HashMap<>();
-        for(int i = 1; i < bigram.size(); i+=2)
-        {
+        for (int i = 1; i < bigram.size(); i += 2) {
             int freq = Integer.parseInt(bigram.get(i));
-            if(freq < lim) nonpopBi.put(bigram.get(i-1), freq);
+            if (freq < lim) nonpopBi.put(bigram.get(i - 1), freq);
         }
         return nonpopBi;
     }
@@ -240,25 +239,24 @@ public class TextCriteria {
         return Y;
     }
 
-    public static ArrayList<String> GeneratedSeq(int l, int n, String alp, int deg){
+    public static ArrayList<String> GeneratedSeq(int l, int n, String alp, int deg) {
         ArrayList<String> Y = new ArrayList<>();
-        if(deg==1){
+        if (deg == 1) {
             Random r = new Random();
-            for(int i=0; i<n; i++){
+            for (int i = 0; i < n; i++) {
                 StringBuilder temp = new StringBuilder();
-                for(int j=0; j<l; j++){
+                for (int j = 0; j < l; j++) {
                     int index = r.nextInt(32);
                     temp.append(alp.charAt(index));
                 }
                 Y.add(temp.toString());
             }
-        }
-        else{
+        } else {
             Random r = new Random();
             ArrayList<String> allBi = bigramAlph();
-            for(int i=0; i<n; i++){
+            for (int i = 0; i < n; i++) {
                 StringBuilder temp = new StringBuilder();
-                for(int j=0; j+1<l; j=j+2){
+                for (int j = 0; j + 1 < l; j = j + 2) {
                     int index = r.nextInt(1024);
                     temp.append(allBi.get(index));
                 }
@@ -269,40 +267,37 @@ public class TextCriteria {
         return Y;
     }
 
-    public static ArrayList<String> CorrelationSeq(int l, int n, String alp, int deg){
+    public static ArrayList<String> CorrelationSeq(int l, int n, String alp, int deg) {
         ArrayList<String> Y = new ArrayList<>();
-        if(deg==1) {
+        if (deg == 1) {
             Random r = new Random();
-            for(int i=0; i<n; i++){
+            for (int i = 0; i < n; i++) {
                 StringBuilder temp = new StringBuilder();
                 int s0 = r.nextInt(32);
                 int s1 = r.nextInt(32);
-                int sTemp = (s0+s1)%32;
+                int sTemp = (s0 + s1) % 32;
                 temp.append(alp.charAt(sTemp));
-                for(int j=1; j<l; j++)
-                {
+                for (int j = 1; j < l; j++) {
                     s0 = s1;
                     s1 = sTemp;
-                    sTemp = (s0+s1)%32;
+                    sTemp = (s0 + s1) % 32;
                     temp.append(alp.charAt(sTemp));
                 }
                 Y.add(temp.toString());
             }
-        }
-        else {
+        } else {
             ArrayList<String> allBi = bigramAlph();
             Random r = new Random();
-            for(int i=0; i<n; i++){
+            for (int i = 0; i < n; i++) {
                 StringBuilder temp = new StringBuilder();
                 int s0 = r.nextInt(1024);
                 int s1 = r.nextInt(1024);
-                int sTemp = (s0+s1)%1024;
+                int sTemp = (s0 + s1) % 1024;
                 temp.append(allBi.get(sTemp));
-                for(int j=1; j+1<l; j=j+2)
-                {
+                for (int j = 1; j + 1 < l; j = j + 2) {
                     s0 = s1;
                     s1 = sTemp;
-                    sTemp = (s0+s1)%1024;
+                    sTemp = (s0 + s1) % 1024;
                     temp.append(allBi.get(sTemp));
                 }
                 Y.add(temp.toString());
@@ -324,15 +319,13 @@ public class TextCriteria {
                         countfalse++;
                         break;
                     }
-                    if(j == ((N.get(0)).length() - 1))
-                    {
+                    if (j == ((N.get(0)).length() - 1)) {
                         counttrue++;
                         break;
                     }
                 }
             }
-        }
-        else {
+        } else {
             HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
             for (String l : N) {
                 for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
@@ -341,32 +334,37 @@ public class TextCriteria {
                         countfalse++;
                         break;
                     }
-                    if(j == ((N.get(0)).length() - 1)) {
+                    if (j == ((N.get(0)).length() - 1)) {
                         counttrue++;
                         break;
                     }
                 }
             }
         }
-        if(FFPP == 1) return counttrue;
+        if (FFPP == 1) return counttrue;
         else return countfalse;
     }
 
-    public static boolean CriteriaOne(ArrayList<String> N, String text, int mod, int FFPP)
-    {
+    public static int CriteriaOne(ArrayList<String> N, String text, int mod, int FFPP) {
         int counttrue = 0, countfalse = 0;
-        if(mod==1){
+        if (mod == 1) {
             HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
-            HashMap<Character, Integer> Aaf = new HashMap<>();
             for (String l : N) {
+                HashMap<Character, Integer> Aaf = new HashMap<>();
                 for (int j = 0; j < (N.get(0)).length(); j++) {
                     char lTemp = alp.charAt(j);
                     if (Afrq.containsKey(lTemp)) Aaf.put(lTemp, 1);
                 }
+                if (abs(Afrq.size() - Aaf.size()) <= 2) {
+                    countfalse++;
+                    break;
+                }
+                if (abs(Afrq.size() - Aaf.size()) > 2) {
+                    counttrue++;
+                    break;
+                }
             }
-            return abs(Afrq.size() - Aaf.size()) >= 2;
-        }
-        else {
+        } else {
             HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
             HashMap<String, Integer> Aaf = new HashMap<>();
             for (String l : N) {
@@ -374,181 +372,182 @@ public class TextCriteria {
                     String lTemp = l.substring(j, j + 2);
                     if (Afrq.containsKey(lTemp)) Aaf.put(lTemp, 1);
                 }
-            }
-            return abs(Afrq.size() - Aaf.size()) >= 2;
-        }
-        //System.out.println(Afrq);
-        //System.out.println(N);
-    }
-
-    public static boolean CriteriaTwo(ArrayList<String> N, String text, int mod)
-    {
-        int counttrue = 0, countfalse = 0;
-        if(mod==1) {
-            HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
-            HashMap<Character, Integer> Aaf ;
-            for (String l : N) {
-                Aaf = mapOfPopularLet(l,0);
-                for (int j = 0; j < (N.get(0)).length(); j++) {
-                    if(Afrq.containsKey(l.charAt(j)))
-                    {
-                        if(Aaf.get(l.charAt(j)) < 2) return false;
-                    }
+                if (abs(Afrq.size() - Aaf.size()) <= 2) {
+                    countfalse++;
+                    break;
+                }
+                if (abs(Afrq.size() - Aaf.size()) > 2) {
+                    counttrue++;
+                    break;
                 }
             }
-            return true;
         }
-        else {
-            HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
-            HashMap<String, Integer> Aaf;
-            for (String l : N) {
-                Aaf = mapOfPopularBi(l,0);
-                for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
-                    String lTemp = l.substring(j, j + 2);
-                    if (Afrq.containsKey(lTemp))
-                    {
-                        if(Aaf.get(lTemp) < 2) return false;
-                    }
-                }
-            }
-            return true;
-        }
-    }
-
-    public static boolean CriteriaThree(ArrayList<String> N, String text, int mod)
-    {
-        int counttrue = 0, countfalse = 0;
-        if(mod == 1)
-        {
-            HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
-            HashMap<Character, Integer> Aaf;
-            int sum = 0;
-            for (String l : N) {
-                Aaf = mapOfPopularLet(l,0);
-                for (int j = 0; j < (N.get(0)).length(); j++) {
-                    if(Afrq.containsKey(l.charAt(j)))
-                    {
-                        sum+= Aaf.get(l.charAt(j));
-                    }
-                }
-                if(sum < 5) return false;
-            }
-            return true;
-        }
-        else{
-            HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
-            HashMap<String, Integer> Aaf;
-            int sum = 0;
-            for (String l : N) {
-                Aaf = mapOfPopularBi(l,0);
-                for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
-                    String lTemp = l.substring(j, j + 2);
-                    if (Afrq.containsKey(lTemp))
-                    {
-                        sum+=Aaf.get(lTemp);
-                    }
-                }
-                if(sum < 3) return false;
-            }
-            return true;
-        }
-
-    }
-
-    public static double BiSubIndex(String L, HashMap<String, Integer> freq)
-    {
-        ArrayList<String> alp = bigramAlph();
-        double a = 0;
-        for(int i = 0; i < alp.size(); i++)
-        {
-            if(freq.containsKey(alp.get(i))) a= a + freq.get(alp.get(i))*(freq.get(alp.get(i)) - 1);
-        }
-        a = a/(L.length()*(L.length()-1));
-        return a;
-    }
-
-    public static double LetSubIndex(String L, HashMap<Character, Integer> freq)
-    {
-        double a = 0;
-        for(int i = 0; i < alp.length(); i++)
-        {
-            if(freq.containsKey(alp.charAt(i))) a= a + freq.get(alp.charAt(i))*(freq.get(alp.charAt(i))-1);
-        }
-        a = a/(L.length()*(L.length()-1));
-        return a;
-    }
-
-    public static int CriteriaFour(ArrayList<String> N, String text, int mod, int FFPP)
-    {
-        int counttrue = 0, countfalse = 0;
-        if(mod == 1)
-        {
-            HashMap<Character, Integer> frq = mapOfPopularLet(text, 0);
-            HashMap<Character, Integer> Aaf;
-            double SubInd = LetSubIndex(text,frq);
-            for (String l : N) {
-                Aaf = mapOfPopularLet(l,0);
-                double SubLInd = LetSubIndex(l,Aaf);
-                if(abs(SubInd - SubLInd) > 4.41) countfalse++;
-                else counttrue++;
-            }
-        }
-        else{
-            HashMap<String, Integer> frq = mapOfPopularBi(text, 0);
-            HashMap<String, Integer> Aaf;
-            double SubInd = BiSubIndex(text,frq);
-            for (String l : N) {
-                Aaf = mapOfPopularBi(l,0);
-                double SubLInd = BiSubIndex(l,Aaf);
-                if(abs(SubInd - SubLInd) > 0.955) countfalse++;
-                else counttrue++;
-            }
-
-        }
-        if(FFPP == 1) return counttrue;
+        if (FFPP == 1) return counttrue;
         else return countfalse;
     }
 
-    public static int CriteriaFive(ArrayList<String> N, String text, int mod, int FFPP)
-    {
+    public static int CriteriaTwo(ArrayList<String> N, String text, int mod, int FFPP) {
         int counttrue = 0, countfalse = 0;
-        if(mod == 1)
-        {
+        if (mod == 1) {
+            HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
+            HashMap<Character, Integer> Aaf;
+            for (String l : N) {
+                Aaf = mapOfPopularLet(l, 0);
+                for (int j = 0; j < (N.get(0)).length(); j++) {
+                    if (Afrq.containsKey(l.charAt(j))) {
+                        if (Aaf.get(l.charAt(j)) < 2) {
+                            countfalse++;
+                            break;
+                        }
+                        if (Aaf.get(l.charAt(j)) >= 2) {
+                            counttrue++;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
+            HashMap<String, Integer> Aaf;
+            for (String l : N) {
+                Aaf = mapOfPopularBi(l, 0);
+                for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
+                    String lTemp = l.substring(j, j + 2);
+                    if (Afrq.containsKey(lTemp)) {
+                        if (Aaf.get(lTemp) < 2) {
+                            countfalse++;
+                            break;
+                        }
+                        if (Aaf.get(lTemp) >= 2) {
+                            counttrue++;
+                            break;
+                        }
+                    }
+
+                }
+            }
+        }
+        if (FFPP == 1) return counttrue;
+        else return countfalse;
+    }
+
+    public static boolean CriteriaThree(ArrayList<String> N, String text, int mod, int FFPP) {
+        int counttrue = 0, countfalse = 0;
+        if (mod == 1) {
+            HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
+            HashMap<Character, Integer> Aaf;
+            int sum = 0;
+            for (String l : N) {
+                Aaf = mapOfPopularLet(l, 0);
+                for (int j = 0; j < (N.get(0)).length(); j++) {
+                    if (Afrq.containsKey(l.charAt(j))) {
+                        sum += Aaf.get(l.charAt(j));
+                    }
+                }
+                if (sum < 5) return false;
+            }
+            return true;
+        } else {
+            HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
+            HashMap<String, Integer> Aaf;
+            int sum = 0;
+            for (String l : N) {
+                Aaf = mapOfPopularBi(l, 0);
+                for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
+                    String lTemp = l.substring(j, j + 2);
+                    if (Afrq.containsKey(lTemp)) {
+                        sum += Aaf.get(lTemp);
+                    }
+                }
+                if (sum < 3) return false;
+            }
+            return true;
+        }
+
+    }
+
+    public static double BiSubIndex(String L, HashMap<String, Integer> freq) {
+        ArrayList<String> alp = bigramAlph();
+        double a = 0;
+        for (int i = 0; i < alp.size(); i++) {
+            if (freq.containsKey(alp.get(i))) a = a + freq.get(alp.get(i)) * (freq.get(alp.get(i)) - 1);
+        }
+        a = a / (L.length() * (L.length() - 1));
+        return a;
+    }
+
+    public static double LetSubIndex(String L, HashMap<Character, Integer> freq) {
+        double a = 0;
+        for (int i = 0; i < alp.length(); i++) {
+            if (freq.containsKey(alp.charAt(i))) a = a + freq.get(alp.charAt(i)) * (freq.get(alp.charAt(i)) - 1);
+        }
+        a = a / (L.length() * (L.length() - 1));
+        return a;
+    }
+
+    public static int CriteriaFour(ArrayList<String> N, String text, int mod, int FFPP) {
+        int counttrue = 0, countfalse = 0;
+        if (mod == 1) {
+            HashMap<Character, Integer> frq = mapOfPopularLet(text, 0);
+            HashMap<Character, Integer> Aaf;
+            double SubInd = LetSubIndex(text, frq);
+            for (String l : N) {
+                Aaf = mapOfPopularLet(l, 0);
+                double SubLInd = LetSubIndex(l, Aaf);
+                if (abs(SubInd - SubLInd) > 4.41) countfalse++;
+                else counttrue++;
+            }
+        } else {
+            HashMap<String, Integer> frq = mapOfPopularBi(text, 0);
+            HashMap<String, Integer> Aaf;
+            double SubInd = BiSubIndex(text, frq);
+            for (String l : N) {
+                Aaf = mapOfPopularBi(l, 0);
+                double SubLInd = BiSubIndex(l, Aaf);
+                if (abs(SubInd - SubLInd) > 0.955) countfalse++;
+                else counttrue++;
+            }
+
+        }
+        if (FFPP == 1) return counttrue;
+        else return countfalse;
+    }
+
+    public static int CriteriaFive(ArrayList<String> N, String text, int mod, int FFPP) {
+        int counttrue = 0, countfalse = 0;
+        if (mod == 1) {
             HashMap<Character, Integer> frq = mapOfnonPopularLet(text, 11000);
             HashMap<Character, Integer> Brf = new HashMap<>();
             int sum;
             for (String l : N) {
                 for (int j = 0; j < (N.get(0)).length(); j++) {
-                    if(frq.containsKey(l.charAt(j)))
-                    {
-                        Brf.put(l.charAt(j),1);
+                    if (frq.containsKey(l.charAt(j))) {
+                        Brf.put(l.charAt(j), 1);
                     }
                 }
                 sum = frq.size() - Brf.size();
-                if(sum < ((int) Math.ceil(frq.size()*0.85))) countfalse++;
+                if (sum < ((int) Math.ceil(frq.size() * 0.85))) countfalse++;
                 else counttrue++;
             }
-        }
-        else {
+        } else {
             HashMap<String, Integer> frq = mapOfnonPopularBi(text, 3);
             HashMap<String, Integer> Brf = new HashMap<>();
             int sum;
             for (String l : N) {
                 for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
                     String lTemp = l.substring(j, j + 2);
-                    if (frq.containsKey(lTemp))
-                    {
-                        Brf.put(lTemp,1);
+                    if (frq.containsKey(lTemp)) {
+                        Brf.put(lTemp, 1);
                     }
 
                 }
                 sum = frq.size() - Brf.size();
-                if(sum < ((int) Math.ceil(frq.size()*0.85))) countfalse++;
+                if (sum < ((int) Math.ceil(frq.size() * 0.85))) countfalse++;
                 else counttrue++;
             }
 
         }
-        if(FFPP == 1) return counttrue;
+        if (FFPP == 1) return counttrue;
         else return countfalse;
     }
 
@@ -607,7 +606,7 @@ public class TextCriteria {
         Vigenere(tensym, keyword, 1, alp);
         int deg = 1;
         Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
-        ArrayList<String > N1 = GeneratedSeq(l, n, alp, deg);
+        ArrayList<String> N1 = GeneratedSeq(l, n, alp, deg);
         CorrelationSeq(l, n, alp, deg);
         int ind = CriteriaFive(Vigenere(tensym, keyword, 1, alp), builder.toString(), deg, 2);
         System.out.println(ind);
