@@ -514,7 +514,7 @@ public class TextCriteria {
         int counttrue = 0, countfalse = 0;
         if(mod == 1)
         {
-            HashMap<Character, Integer> frq = mapOfnonPopularLet(text, 1700);
+            HashMap<Character, Integer> frq = mapOfnonPopularLet(text, 11000);
             HashMap<Character, Integer> Brf = new HashMap<>();
             int sum;
             for (String l : N) {
@@ -524,8 +524,8 @@ public class TextCriteria {
                         Brf.put(l.charAt(j),1);
                     }
                 }
-                sum = l.length() - Brf.size();
-                if(sum <= 5) countfalse++;
+                sum = frq.size() - Brf.size();
+                if(sum < ((int) Math.ceil(frq.size()*0.85))) countfalse++;
                 else counttrue++;
             }
         }
@@ -605,7 +605,7 @@ public class TextCriteria {
         int n = 10_000;
         ArrayList<String> tensym = delaytext(builder, l, n);
         Vigenere(tensym, keyword, 1, alp);
-        int deg = 2;
+        int deg = 1;
         Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
         ArrayList<String > N1 = GeneratedSeq(l, n, alp, deg);
         CorrelationSeq(l, n, alp, deg);
