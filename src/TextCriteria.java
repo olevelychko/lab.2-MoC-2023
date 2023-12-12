@@ -307,7 +307,7 @@ public class TextCriteria {
             HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
             for (String l : N) {
                 for (int j = 0; j < (N.get(0)).length(); j++) {
-                    char lTemp = alp.charAt(j);
+                    char lTemp = l.charAt(j);
                     if (!Afrq.containsKey(lTemp)) {
                         countfalse++;
                         break;
