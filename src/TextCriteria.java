@@ -1,17 +1,20 @@
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
 import static java.lang.Math.abs;
 
 public class TextCriteria {
     private static final String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
-    private static final int limLet = 40000;
-    private static final int limBi = 2500;
+    private static final int limLet =100000;
+    private static final int limBi = 50;
 
     private static boolean isCyrillicOrSpace(char ch) {
         for (int i = 0; i < alp.length(); i++) {
@@ -307,7 +310,7 @@ public class TextCriteria {
             HashMap<Character, Integer> Afrq = mapOfPopularLet(text, limLet);
             for (String l : N) {
                 for (int j = 0; j < (N.get(0)).length(); j++) {
-                    char lTemp = alp.charAt(j);
+                    char lTemp = l.charAt(j);
                     if (!Afrq.containsKey(lTemp)) {
                         countfalse++;
                         break;
@@ -327,7 +330,7 @@ public class TextCriteria {
                         countfalse++;
                         break;
                     }
-                    if (j == ((N.get(0)).length() - 1)) {
+                    if (j == ((N.get(0)).length() - 2)) {
                         counttrue++;
                         break;
                     }
@@ -348,10 +351,10 @@ public class TextCriteria {
                     char lTemp = l.charAt(j);
                     if (Afrq.containsKey(lTemp)) Aaf.put(lTemp, 1);
                 }
-                if (abs(Afrq.size() - Aaf.size()) <= 7) {
+                if (abs(Afrq.size() - Aaf.size()) <= 3) {
                     countfalse++;
                 }
-                if (abs(Afrq.size() - Aaf.size()) > 7) {
+                if (abs(Afrq.size() - Aaf.size()) > 3) {
                     counttrue++;
                 }
             }
@@ -363,10 +366,10 @@ public class TextCriteria {
                     String lTemp = l.substring(j, j + 2);
                     if (Afrq.containsKey(lTemp)) Aaf.put(lTemp, 1);
                 }
-                if (abs(Afrq.size() - Aaf.size()) <= 2) {
+                if (abs(Afrq.size() - Aaf.size()) <= 200) {
                     countfalse++;
                 }
-                if (abs(Afrq.size() - Aaf.size()) > 2) {
+                if (abs(Afrq.size() - Aaf.size()) > 200) {
                     counttrue++;
                 }
             }
@@ -383,11 +386,11 @@ public class TextCriteria {
                 HashMap<Character, Integer> Aaf = mapOfPopularLet(l, 0);
                 for (int j = 0; j < (N.get(0)).length(); j++) {
                     if (Afrq.containsKey(l.charAt(j))) {
-                        if (Aaf.get(l.charAt(j)) < 2) {
+                        if (Aaf.get(l.charAt(j)) < 450) {
                             countfalse++;
                             break;
                         }
-                        if (Aaf.get(l.charAt(j)) >= 2) {
+                        if (Aaf.get(l.charAt(j)) >= 450) {
                             counttrue++;
                             break;
                         }
@@ -402,11 +405,11 @@ public class TextCriteria {
                 for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
                     String lTemp = l.substring(j, j + 2);
                     if (Afrq.containsKey(lTemp)) {
-                        if (Aaf.get(lTemp) < 2) {
+                        if (Aaf.get(lTemp) < 15) {
                             countfalse++;
                             break;
                         }
-                        if (Aaf.get(lTemp) >= 2) {
+                        if (Aaf.get(lTemp) >= 15) {
                             counttrue++;
                             break;
                         }
@@ -427,18 +430,18 @@ public class TextCriteria {
             int sum = 0;
             for (String l : N) {
                 HashMap<Character, Integer> Aaf = mapOfPopularLet(l, 0);
-                System.out.println(l);
-                System.out.println(Aaf);
+                //System.out.println(l);
+                //System.out.println(Aaf);
                 for (int j = 0; j < (N.get(0)).length(); j++) {
                     if (Afrq.containsKey(l.charAt(j))) {
                         sum += Aaf.get(l.charAt(j));
                     }
 
                 }
-                if (sum < 5) {
+                if (sum < l.length()*500.25) {
                     countfalse++;
                 }
-                if (sum >= 5) {
+                if (sum >= l.length()*500.25) {
                     counttrue++;
                 }
                 sum=0;
@@ -454,10 +457,10 @@ public class TextCriteria {
                         sum += Aaf.get(lTemp);
                     }
                 }
-                if (sum < 3) {
+                if (sum < 118000) {
                     countfalse++;
                 }
-                if (sum >= 3) {
+                if (sum >= 118000) {
                     counttrue++;
                 }
                 sum=0;
@@ -494,7 +497,7 @@ public class TextCriteria {
             for (String l : N) {
                 HashMap<Character, Integer> Aaf = mapOfPopularLet(l, 0);
                 double SubLInd = LetSubIndex(l, Aaf);
-                if (abs(SubInd - SubLInd) > 4.41) countfalse++;
+                if (abs(SubInd - SubLInd) > 1.6268) countfalse++;
                 else counttrue++;
             }
         } else {
@@ -503,7 +506,7 @@ public class TextCriteria {
             for (String l : N) {
                 HashMap<String, Integer> Aaf = mapOfPopularBi(l, 0);
                 double SubLInd = BiSubIndex(l, Aaf);
-                if (abs(SubInd - SubLInd) > 0.955) countfalse++;
+                if (abs(SubInd + SubLInd) > 50.9529) countfalse++;
                 else counttrue++;
             }
 
@@ -515,7 +518,7 @@ public class TextCriteria {
     public static int CriteriaFive(ArrayList<String> N, String text, int mod, int FFPP) {
         int counttrue = 0, countfalse = 0;
         if (mod == 1) {
-            HashMap<Character, Integer> frq = mapOfnonPopularLet(text, 11000);
+            HashMap<Character, Integer> frq = mapOfnonPopularLet(text, 80000);
             int sum;
             for (String l : N) {
                 HashMap<Character, Integer> Brf = new HashMap<>();
@@ -525,11 +528,11 @@ public class TextCriteria {
                     }
                 }
                 sum = frq.size() - Brf.size();
-                if (sum < ((int) Math.ceil(frq.size() * 0.85))) countfalse++;
+                if (sum < ((int) Math.ceil(frq.size() * 0.1))) countfalse++;
                 else counttrue++;
             }
         } else {
-            HashMap<String, Integer> frq = mapOfnonPopularBi(text, 3);
+            HashMap<String, Integer> frq = mapOfnonPopularBi(text, 10);
             int sum;
             for (String l : N) {
                 HashMap<String, Integer> Brf = new HashMap<>();
@@ -541,7 +544,7 @@ public class TextCriteria {
 
                 }
                 sum = frq.size() - Brf.size();
-                if (sum < ((int) Math.ceil(frq.size() * 0.85))) countfalse++;
+                if (sum < ((int) Math.ceil(frq.size() * 0.80))) countfalse++;
                 else counttrue++;
             }
 
@@ -550,9 +553,11 @@ public class TextCriteria {
         else return countfalse;
     }
 
-    public static boolean StructureCriteria(ArrayList<String> N, String text) throws UnsupportedEncodingException, DataFormatException {
+    public static boolean StructureCriteria(ArrayList<String> N) throws UnsupportedEncodingException, DataFormatException {
+        int sum = 0;
+        int hz = 0, ho = 0;
         for (String ignored : N) {
-            byte[] input = text.getBytes(StandardCharsets.UTF_8);
+            byte[] input = ignored.getBytes(StandardCharsets.UTF_8);
             // Compress the bytes
             byte[] output = new byte[100];
             Deflater compressor = new Deflater();
@@ -560,9 +565,15 @@ public class TextCriteria {
             compressor.finish();
             int compressedDataLength = compressor.deflate(output);
             compressor.end();
-
+            for(int i = 0; i < output.length; i++)
+            {
+                sum = sum + output[i];
+            }
+            if(abs(sum) > 400) hz++;
+            else ho++;
+            sum = 0;
             String putString = new String(output, 0, compressedDataLength, StandardCharsets.UTF_8);
-            System.out.println(putString);
+            //System.out.println(putString);
             // Decompress the bytes
             Inflater decompressor = new Inflater();
             decompressor.setInput(output, 0, compressedDataLength);
@@ -572,9 +583,147 @@ public class TextCriteria {
 
             // Decode the bytes into a String
             String outputString = new String(result, 0, resultLength, StandardCharsets.UTF_8);
-            System.out.println(outputString);
+            //System.out.println(outputString);
         }
+        sum = sum/1000;
+        System.out.println("This is a simple text" + hz);
+        System.out.println("This is a random text" + ho);
         return true;
+    }
+
+    public static Integer StructureUniCriteria(ArrayList<String> N, int FFPP)
+    {
+        int counttrue =0, countfalse =0;
+        for(String n : N)
+        {
+            HashMap<Character,Integer> let = mapOfPopularLet(n,0);
+            List<Integer> Ind = new ArrayList(let.values());
+            Collections.sort(Ind);
+            HashMap<Character,String> Uni = new HashMap<>();
+            String a = "1";
+            for(int i = Ind.size()-1; i > -1;i--)
+            {
+                int key = Ind.get(i);
+                for (int j = 0; j < alp.length(); j++)
+                {
+                    if(let.containsKey(alp.charAt(j)) && let.get(alp.charAt(j)) == key && !Uni.containsKey(alp.charAt(j)))
+                    {
+                        Uni.put(alp.charAt(j), a);
+                        break;
+                    }
+                }
+                a = "0" + a;
+            }
+            //System.out.println(Uni);
+            a = "";
+            for(int k = 0; k < n.length(); k++)
+            {
+                a = a + Uni.get(n.charAt(k));
+            }
+            if(a.length() < 97_000) countfalse++;
+            else counttrue++;
+        }
+        if(FFPP == 1) return countfalse;
+        else return counttrue;
+    }
+
+    public static boolean StructureLZMCriteria (ArrayList<String> N) throws IOException {
+        int sum = 0;
+        int hz = 0, ho = 0;
+        for(String n : N) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(n.length());
+            GZIPOutputStream gzip = new GZIPOutputStream(bos);
+            gzip.write(n.getBytes());
+            gzip.close();
+            byte[] compressed = bos.toByteArray();
+            bos.close();
+            for(int i = 0; i < compressed.length; i++)
+            {
+                sum = sum + compressed[i];
+            }
+            if(abs(sum) > 3000) hz++;
+            else ho++;
+            sum = 0;
+        }
+        sum = sum/1000;
+        System.out.println("This is a simple text" + hz);
+        System.out.println("This is a random text" + ho);
+        return true;
+    }
+
+    public static void testfunction(ArrayList<String> delaytext, ArrayList<String> modifytext, String builder, int l, int deg) throws DataFormatException, IOException {
+        System.out.println("This is a criteria test seq");
+        System.out.println("lenght :" + l + "  l-gram, l = " + deg);
+
+        System.out.println("Criteria Zero -- 2.0");
+        System.out.println("For simple text");
+        System.out.println(CriteriaZero(delaytext, builder, deg, 2));
+        System.out.println("For text after manipulation");
+        System.out.println("vigener 1 mod");
+        System.out.println(CriteriaZero(modifytext, builder, deg, 1));
+
+        System.out.println("Criteria One -- 2.1");
+        System.out.println("For simple text");
+        System.out.println(CriteriaOne(delaytext, builder, deg, 2));
+        System.out.println("For text after manipulation");
+        System.out.println(CriteriaOne(modifytext, builder, deg, 1));
+
+        System.out.println("Criteria Two -- 2.2");
+        System.out.println("For simple text");
+        System.out.println(CriteriaTwo(delaytext, builder, deg, 2));
+        System.out.println("For text after manipulation");
+        System.out.println(CriteriaTwo(modifytext, builder, deg, 1));
+
+        System.out.println("Criteria Three -- 2.3");
+        System.out.println("For simple text");
+        System.out.println(CriteriaThree(delaytext, builder, deg, 2));
+        System.out.println("For text after manipulation");
+        System.out.println(CriteriaThree(modifytext, builder, deg, 1));
+
+        System.out.println("Criteria Four -- 4.0");
+        System.out.println("For simple text");
+        System.out.println(CriteriaFour(delaytext, builder, deg, 2));
+        System.out.println("For text after manipulation");
+        System.out.println(CriteriaFour(modifytext, builder, deg, 1));
+
+        System.out.println("Criteria Five -- 5.0");
+        System.out.println("For simple text");
+        System.out.println(CriteriaFive(delaytext, builder, deg, 2));
+        System.out.println("For text after manipulation");
+        System.out.println(CriteriaFive(modifytext, builder, deg, 1));
+
+        System.out.println("Structure Criteria -- 6.0");
+        System.out.println("For simple text");
+        System.out.println(StructureCriteria(delaytext));
+        System.out.println("For text after manipulation");
+        System.out.println(StructureCriteria(modifytext));
+
+        System.out.println("Structure UniCriteria -- 6.1");
+        System.out.println("For simple text");
+        System.out.println(StructureUniCriteria(delaytext,2));
+        System.out.println("For text after manipulation");
+        System.out.println(StructureUniCriteria(modifytext,1));
+
+        System.out.println("Structure LZMCriteria -- 6.2");
+        System.out.println("For simple text");
+        System.out.println(StructureLZMCriteria(delaytext));
+        System.out.println("For text after manipulation");
+        System.out.println(StructureLZMCriteria(modifytext));
+    }
+
+    public static void Oneletterseq()
+    {
+        String keyword = "метропоїзд";
+        String a = "a";
+        String c = a;
+        for (int i = 0; i < 10_000; i++)
+        {
+            c = c +a;
+        }
+        ArrayList<String> oursq = new ArrayList<>();
+        oursq.add(c);
+        oursq = Vigenere(oursq, keyword, 10, alp);
+        System.out.println(StructureUniCriteria(oursq,1));
     }
 
     public static void main(String[] args) throws Exception {
@@ -592,19 +741,25 @@ public class TextCriteria {
                 }
             }
         }
+        System.out.println("LENGTH OF TEXT= " + builder.length());
         int numLet = numOfLetters(builder);
-        System.out.println("The number of letters is: " + numLet);
+        //System.out.println("The number of letters is: " + numLet);
         int numBi = numOfBigrams(builder);
-        System.out.println("The number of bigrams is: " + numBi);
-        int l = 10;
-        int n = 10_000;
+        //System.out.println("The number of bigrams is: " + numBi);
+        int l = 10000;
+        int n = 1000;
         ArrayList<String> tensym = delaytext(builder, l, n);
-        Vigenere(tensym, keyword, 1, alp);
-        int deg = 1;
-        Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
-        ArrayList<String> N1 = GeneratedSeq(l, n, alp, deg);
-        CorrelationSeq(l, n, alp, deg);
-        int ind = CriteriaFive(Vigenere(tensym, keyword, 1, alp), builder.toString(), deg, 1);
-        System.out.println(ind);
+       // Vigenere(tensym, keyword, 2, alp);
+        int deg = 2;
+        //Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
+        //ArrayList<String> N1 = GeneratedSeq(l, n, alp, deg);
+        //CorrelationSeq(l, n, alp, deg);
+        int ind = CriteriaFive(Vigenere(tensym, keyword, 10, alp), builder.toString(), deg, 1);
+
+        System.out.println("This is a criteria test seq");
+        System.out.println("lenght :" + l + "  l-gram, l = " + deg);
+
+        //testfunction(tensym, CorrelationSeq(l, n, alp, deg), builder.toString(), l, deg);
+        Oneletterseq();
     }
 }
