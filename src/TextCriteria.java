@@ -13,7 +13,7 @@ import static java.lang.Math.abs;
 
 public class TextCriteria {
     private static final String alp = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя";
-    private static final int limLet =100000;
+    private static final int limLet = 100000;
     private static final int limBi = 50;
 
     private static boolean isCyrillicOrSpace(char ch) {
@@ -399,7 +399,6 @@ public class TextCriteria {
             }
         } else {
             HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
-
             for (String l : N) {
                 HashMap<String, Integer> Aaf = mapOfPopularBi(l, 0);
                 for (int j = 0; j + 1 < (N.get(0)).length(); j = j + 2) {
@@ -430,21 +429,19 @@ public class TextCriteria {
             int sum = 0;
             for (String l : N) {
                 HashMap<Character, Integer> Aaf = mapOfPopularLet(l, 0);
-                //System.out.println(l);
-                //System.out.println(Aaf);
                 for (int j = 0; j < (N.get(0)).length(); j++) {
                     if (Afrq.containsKey(l.charAt(j))) {
                         sum += Aaf.get(l.charAt(j));
                     }
 
                 }
-                if (sum < l.length()*500.25) {
+                if (sum < l.length() * 500.25) {
                     countfalse++;
                 }
-                if (sum >= l.length()*500.25) {
+                if (sum >= l.length() * 500.25) {
                     counttrue++;
                 }
-                sum=0;
+                sum = 0;
             }
         } else {
             HashMap<String, Integer> Afrq = mapOfPopularBi(text, limBi);
@@ -463,7 +460,7 @@ public class TextCriteria {
                 if (sum >= 118000) {
                     counttrue++;
                 }
-                sum=0;
+                sum = 0;
             }
         }
         if (FFPP == 1) return counttrue;
@@ -565,14 +562,12 @@ public class TextCriteria {
             compressor.finish();
             int compressedDataLength = compressor.deflate(output);
             compressor.end();
-            for(int i = 0; i < output.length; i++)
-            {
-                sum = sum + output[i];
+            for (byte b : output) {
+                sum = sum + b;
             }
-            if(abs(sum) > 400) hz++;
+            if (abs(sum) > 400) hz++;
             else ho++;
             sum = 0;
-            String putString = new String(output, 0, compressedDataLength, StandardCharsets.UTF_8);
             //System.out.println(putString);
             // Decompress the bytes
             Inflater decompressor = new Inflater();
@@ -582,32 +577,25 @@ public class TextCriteria {
             decompressor.end();
 
             // Decode the bytes into a String
-            String outputString = new String(result, 0, resultLength, StandardCharsets.UTF_8);
             //System.out.println(outputString);
         }
-        sum = sum/1000;
         System.out.println("This is a simple text" + hz);
         System.out.println("This is a random text" + ho);
         return true;
     }
 
-    public static Integer StructureUniCriteria(ArrayList<String> N, int FFPP)
-    {
-        int counttrue =0, countfalse =0;
-        for(String n : N)
-        {
-            HashMap<Character,Integer> let = mapOfPopularLet(n,0);
+    public static Integer StructureUniCriteria(ArrayList<String> N, int FFPP) {
+        int counttrue = 0, countfalse = 0;
+        for (String n : N) {
+            HashMap<Character, Integer> let = mapOfPopularLet(n, 0);
             List<Integer> Ind = new ArrayList(let.values());
             Collections.sort(Ind);
-            HashMap<Character,String> Uni = new HashMap<>();
+            HashMap<Character, String> Uni = new HashMap<>();
             String a = "1";
-            for(int i = Ind.size()-1; i > -1;i--)
-            {
+            for (int i = Ind.size() - 1; i > -1; i--) {
                 int key = Ind.get(i);
-                for (int j = 0; j < alp.length(); j++)
-                {
-                    if(let.containsKey(alp.charAt(j)) && let.get(alp.charAt(j)) == key && !Uni.containsKey(alp.charAt(j)))
-                    {
+                for (int j = 0; j < alp.length(); j++) {
+                    if (let.containsKey(alp.charAt(j)) && let.get(alp.charAt(j)) == key && !Uni.containsKey(alp.charAt(j))) {
                         Uni.put(alp.charAt(j), a);
                         break;
                     }
@@ -616,36 +604,33 @@ public class TextCriteria {
             }
             //System.out.println(Uni);
             a = "";
-            for(int k = 0; k < n.length(); k++)
-            {
+            for (int k = 0; k < n.length(); k++) {
                 a = a + Uni.get(n.charAt(k));
             }
-            if(a.length() < 97_000) countfalse++;
+            if (a.length() < 97_000) countfalse++;
             else counttrue++;
         }
-        if(FFPP == 1) return countfalse;
+        if (FFPP == 1) return countfalse;
         else return counttrue;
     }
 
-    public static boolean StructureLZMCriteria (ArrayList<String> N) throws IOException {
+    public static boolean StructureLZMCriteria(ArrayList<String> N) throws IOException {
         int sum = 0;
         int hz = 0, ho = 0;
-        for(String n : N) {
+        for (String n : N) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream(n.length());
             GZIPOutputStream gzip = new GZIPOutputStream(bos);
             gzip.write(n.getBytes());
             gzip.close();
             byte[] compressed = bos.toByteArray();
             bos.close();
-            for(int i = 0; i < compressed.length; i++)
-            {
-                sum = sum + compressed[i];
+            for (byte b : compressed) {
+                sum = sum + b;
             }
-            if(abs(sum) > 3000) hz++;
+            if (abs(sum) > 3000) hz++;
             else ho++;
             sum = 0;
         }
-        sum = sum/1000;
         System.out.println("This is a simple text" + hz);
         System.out.println("This is a random text" + ho);
         return true;
@@ -700,9 +685,9 @@ public class TextCriteria {
 
         System.out.println("Structure UniCriteria -- 6.1");
         System.out.println("For simple text");
-        System.out.println(StructureUniCriteria(delaytext,2));
+        System.out.println(StructureUniCriteria(delaytext, 2));
         System.out.println("For text after manipulation");
-        System.out.println(StructureUniCriteria(modifytext,1));
+        System.out.println(StructureUniCriteria(modifytext, 1));
 
         System.out.println("Structure LZMCriteria -- 6.2");
         System.out.println("For simple text");
@@ -711,19 +696,17 @@ public class TextCriteria {
         System.out.println(StructureLZMCriteria(modifytext));
     }
 
-    public static void Oneletterseq()
-    {
+    public static void Oneletterseq() {
         String keyword = "метропоїзд";
         String a = "a";
         String c = a;
-        for (int i = 0; i < 10_000; i++)
-        {
-            c = c +a;
+        for (int i = 0; i < 10_000; i++) {
+            c = c + a;
         }
         ArrayList<String> oursq = new ArrayList<>();
         oursq.add(c);
         oursq = Vigenere(oursq, keyword, 10, alp);
-        System.out.println(StructureUniCriteria(oursq,1));
+        System.out.println(StructureUniCriteria(oursq, 1));
     }
 
     public static void main(String[] args) throws Exception {
@@ -749,7 +732,7 @@ public class TextCriteria {
         int l = 10000;
         int n = 1000;
         ArrayList<String> tensym = delaytext(builder, l, n);
-       // Vigenere(tensym, keyword, 2, alp);
+        // Vigenere(tensym, keyword, 2, alp);
         int deg = 2;
         //Affine(tensym, keyword.substring(0, deg), keyword.substring(deg, deg + deg), alp, deg);
         //ArrayList<String> N1 = GeneratedSeq(l, n, alp, deg);
